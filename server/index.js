@@ -50,13 +50,4 @@ app.delete('/expense', (req, res) => {
   })
 })
 
-app.delete('/expense/:index', (req, res) => {
-  redisClient.hdel('expenses', req.params.index, () => {
-    res.json({
-      error: false,
-      message: `Successfully deleted item ${req.params.index}`
-    })
-  })
-})
-
 app.listen(5000);
