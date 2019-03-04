@@ -1,13 +1,9 @@
 <template>
   <section class="container">
     <div>
-      <logo />
-      <h1 class="title">
-expense-tracker
-</h1>
-      <h2 class="subtitle">
-a simple app to track your expense
-</h2>
+      <logo/>
+      <h1 class="title">expense-tracker</h1>
+      <h2 class="subtitle">a simple app to track your expense</h2>
       <div class="links">
         <a href="https://nuxtjs.org/" target="_blank" class="button--green">Documentation</a>
         <a href="https://github.com/nuxt/nuxt.js" target="_blank" class="button--grey">GitHub</a>
