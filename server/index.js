@@ -2,6 +2,7 @@ const express = require('express');
 const redis = require('redis');
 
 const app = express();
+app.use(express.json())
 
 const redisClient = redis.createClient({
   host: process.env.REDIS_HOST,
@@ -10,22 +11,52 @@ const redisClient = redis.createClient({
 
 app.get('/expense', (req, res) => {
   redisClient.hgetall('expenses', (error, values) => {
-    res.send(values);
+    res.json({
+      error: false,
+      message: 'Successfully retrieve',
+      payload: {
+        count: Object.keys(values).length,
+        expenses: values
+      }
+    })
   });
 });
 
 app.post('/expense', (req, res) => {
-  redisClient.incr('index', index => {
-    console.log(index);
-    console.log(typeof index);
-    const jsonBody = JSON.stringify({
-      message: req.body.message,
-      value: req.body.value
-    });
-    redisClient.hset('expenses', String(index), jsonBody, number => {
-      res.send(number);
-    });
-  });
+  redisClient.setnx('index', 0, function() {
+    redisClient.incr('index', function(error, reply) {
+      const jsonBody = JSON.stringify({
+        message: req.body.message,
+        value: req.body.value
+      });
+      redisClient.hset('expenses', String(reply), jsonBody, () => {
+        res.json({
+          error: false,
+          message: 'Successfully inserted'
+        })
+      });
+    })
+  })
 });
+
+app.delete('/expense', (req, res) => {
+  redisClient.del('index', () => {
+    redisClient.del('expenses', () => {
+      res.json({
+        error: false,
+        message: 'Successfully deleted'
+      })
+    })
+  })
+})
+
+app.delete('/expense/:index', (req, res) => {
+  redisClient.hdel('expenses', req.params.index, () => {
+    res.json({
+      error: false,
+      message: `Successfully deleted item ${req.params.index}`
+    })
+  })
+})
 
 app.listen(5000);
