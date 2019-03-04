@@ -8,13 +8,13 @@ const redisClient = redis.createClient({
   port: process.env.REDIS_PORT
 });
 
-app.get('/', (req, res) => {
+app.get('/expense', (req, res) => {
   redisClient.hgetall('expenses', (error, values) => {
     res.send(values);
   });
 });
 
-app.post('/', (req, res) => {
+app.post('/expense', (req, res) => {
   redisClient.incr('index', index => {
     console.log(index);
     console.log(typeof index);
